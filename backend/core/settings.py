@@ -48,10 +48,10 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -126,19 +126,30 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-rest_framework={
-    'DEFAULT_PERMISSION_CLASSES':[
-        'rest_framework.permission.IsAuthenticated'
-    ],
-
-    'DEFAULT_AUTHENTICATION_CLASSES':[
-        'rest_framework.authentication.SessionAuthentication'
-    ]
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    ),
 }
 
-CORS_ORIGIN_ALLOW_ALL= True
+# REST_FRAMEWORK={
+#     'DEFAULT_PERMISSION_CLASSES':[
+#         'rest_framework.permission.IsAuthenticated'
+#     ],
+
+#     'DEFAULT_AUTHENTICATION_CLASSES':[
+#         'rest_framework.authentication.SessionAuthentication'
+#     ]
+# }
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",  # your React dev server
+]
 
 CORS_ALLOW_CREDENTIALS = True
+
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SECURE = False   # True only if using HTTPS

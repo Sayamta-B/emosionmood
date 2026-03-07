@@ -1,107 +1,65 @@
-import { useState } from "react";
+import {Routes, Route} from "react-router-dom";
+import RegisterProvider from "./context/RegisterProvider"
+import LoginProvider from "./context/LoginProvider"
 
-function App() {
-  const [form, setForm] = useState({
-    username: "",
-    password: ""
-  });
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import LandingPage from "./pages/LandingPage";
+import SidebarLeft from "./components/SidebarLeft";
+import Form from "./pages/Form";
 
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const getCookie = (name) => {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== "") {
-      const cookies = document.cookie.split(";");
-      for (let cookie of cookies) {
-        cookie = cookie.trim();
-        if (cookie.startsWith(name + "=")) {
-          cookieValue = cookie.substring(name.length + 1);
-        }
-      }
-    }
-    return cookieValue;
-  };
-
-  const onLogout = async () => {
-  const csrfToken = getCookie("csrftoken"); // reuse your CSRF function
-
-  await fetch("http://127.0.0.1:8000/api/logout/", {
-    method: "POST",                // ✅ important
-    credentials: "include",
-    headers: {
-      "X-CSRFToken": csrfToken,    // required for POST in Django
-    },
-  });
-  alert("Logged out!");
-};
+import { useState, useEffect } from "react";
+import FormProvider from "./context/FormProvider";
 
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();// Prevent page reload
-
-    try {
-      // Step 1: Get CSRF cookie
-      await fetch("http://127.0.0.1:8000/api/csrf/", {
-        credentials: "include",
+export function AppRoutes(){
+  const [user, setUser] = useState();
+  useEffect(() => {
+    async function checkAuth() {
+      fetch("http://localhost:8000/users/get_csrf/", {
+          credentials: "include",
       });
 
-      const csrfToken = getCookie("csrftoken");
-
-      // Step 2: Send login request
-      const res = await fetch("http://127.0.0.1:8000/api/login/", {
-        method: "POST",
+      const res = await fetch("http://localhost:8000/users/me/", {
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": csrfToken,
-        },
-        body: JSON.stringify(form),
       });
-
-      const data = await res.json();
 
       if (res.ok) {
-        alert("Login successful!");
-      } else {
-        alert(data.error);
+        const data = await res.json();
+        setUser(data);
       }
-
-    } catch (err) {
-      console.error(err);
-      alert("Something went wrong");
     }
-  };
-
-  
-
-  return (
-    <div>
-      <h2>Login Form</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          onChange={handleChange}
-        />
-        <br /><br />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          onChange={handleChange}
-        />
-        <br /><br />
-        <button type="submit">Login</button>
-        <button type="button" onClick={onLogout}>Logout</button>
-      </form>
-    </div>
+    checkAuth();
+  }, []);
+    
+  return(
+    <>
+        <Routes>
+          <Route path="/" element={!user ?<LandingPage />:<Form/>} />
+          <Route path="/register" element={!user ?<Register />:<Form/>} />
+          <Route path="/login" element={!user ?<Login />:<Form/>} />
+          <div className="flex h-screen w-screen overflow-hidden">
+              <SidebarLeft/>
+              <main className="flex-1 overflow-y-auto">
+                <Route path="/home" element={<Home />} />
+                <Route path="/create" element={<Create />} />
+              </main>
+          </div>
+        </Routes>
+    </>
   );
 }
 
+
+function App(){
+  return(
+    <RegisterProvider>
+      <LoginProvider>
+        <FormProvider>
+          <AppRoutes/>
+        </FormProvider>
+      </LoginProvider>
+    </RegisterProvider>
+  );
+}
 export default App;
