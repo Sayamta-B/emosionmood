@@ -10,6 +10,7 @@ import Form from "./pages/Form";
 
 import { useState, useEffect } from "react";
 import FormProvider from "./context/FormProvider";
+import CreateInfoProvider from "./context/CreateInfoProvider";
 
 
 export function AppRoutes(){
@@ -35,13 +36,13 @@ export function AppRoutes(){
   return(
     <>
         <Routes>
-          <Route path="/" element={!user ?<LandingPage />:<Form/>} />
-          <Route path="/register" element={!user ?<Register />:<Form/>} />
-          <Route path="/login" element={!user ?<Login />:<Form/>} />
+          <Route path="/" element={!user ?<LandingPage />:<Home/>} />
+          <Route path="/register" element={!user ?<Register />:<Home/>} />
+          <Route path="/login" element={!user ?<Login />:<Home/>} />
           <div className="flex h-screen w-screen overflow-hidden">
               <SidebarLeft/>
               <main className="flex-1 overflow-y-auto">
-                <Route path="/home" element={<Home />} />
+                <Route path="/home" element={!user ?<Home />:<Register/>} />
                 <Route path="/create" element={<Create />} />
               </main>
           </div>
@@ -56,7 +57,9 @@ function App(){
     <RegisterProvider>
       <LoginProvider>
         <FormProvider>
-          <AppRoutes/>
+          <CreateInfoProvider>
+            <AppRoutes/>
+          </CreateInfoProvider>
         </FormProvider>
       </LoginProvider>
     </RegisterProvider>

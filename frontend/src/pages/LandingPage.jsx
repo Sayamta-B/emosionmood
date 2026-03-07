@@ -32,7 +32,7 @@ export default function LandingPage() {
           </p>
 
           <button
-            onClick={() => (window.location.href = "register/")}
+            onClick={() => (window.location.href = "home/")}
             className="bg-white text-blue-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition"
           >
             Get Started
