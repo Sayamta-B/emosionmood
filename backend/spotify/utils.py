@@ -16,9 +16,9 @@ MOOD_PLAYLISTS = {
 # Initialize Spotify client
 sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(), requests_timeout=20)
 
-def recommend_song_for_mood(mood: str, num_tracks: int = 6):
+def recommend_song_for_mood(mood: str, num_tracks: int = 20):
     """
-    Return a list of recommended tracks based on the given mood.
+    Return a list of recommended tracks based on the given mood after checking that the tracks are valid.
     Each track includes id, name, artists, album cover, Spotify URL, and preview URL.
     """
     mood_lower = mood.lower()

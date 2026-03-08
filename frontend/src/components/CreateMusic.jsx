@@ -2,13 +2,40 @@ import MusicPlayer from "./MusicPlayer";
 
 export default function CreateMusic({
   mood,
-  songs,
-  selectedSongs,
+  recommendedSongs, setRecommendedSongs,
+  selectedSongs, setSelectedSongs,
   handleToggleSong,
   handleNext
 }) {
 
+  // ----------------- Song Select / Deselect -----------------
+  const handleToggleSong = (song) => {
+    const exists = selectedSongs.some(s => s.spotify_id === song.spotify_id);
+
+    const updated = exists
+      ? selectedSongs.filter(s => s.spotify_id !== song.spotify_id)
+      : [...selectedSongs, song];
+
+    setSelectedSongs(updated);
+    reorderRecommendations(updated);
+  };
+
+
+  const reorderRecommendations = (updatedSelected) => {
+    const selectedIds = new Set(updatedSelected.map(s => s.spotify_id));
+
+    const sortedSelected = updatedSelected.map(
+      s => songs.find(x => x.spotify_id === s.spotify_id)
+    );
+
+    const unselected = songs.filter(s => !selectedIds.has(s.spotify_id));
+
+    setRecommendedSongs([...sortedSelected, ...unselected]);
+  };
+
+
   const currentSong = selectedSongs[selectedSongs.length - 1];
+  
 
   return (
     <div className="w-2/5 flex flex-col justify-between bg-white shadow-md rounded-2xl p-6">
@@ -23,7 +50,7 @@ export default function CreateMusic({
 
       <div className="max-h-[400px] overflow-y-auto space-y-2">
 
-        {songs.map((song) => {
+        {recommendedSongs.map((song) => {
 
           const isSelected = selectedSongs.some(
             s => s.spotify_id === song.spotify_id
@@ -63,7 +90,9 @@ export default function CreateMusic({
 
       </div>
 
-      <MusicPlayer currentSong={currentSong} />
+      <MusicPlayer 
+        currentSong={currentSong} 
+      />
 
       <button
         onClick={handleNext}

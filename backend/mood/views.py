@@ -8,10 +8,11 @@ from PIL import Image
 import torch
 from django.core.files.base import ContentFile
 
+from users.models import User
+from posts.models import Post
+from .models import MoodDetection
 
-from spotify.utils import recommend_song_for_mood
 
-# separate the predict and song logic ^^
 @api_view(['POST'])
 def predict(request):
     image = request.FILES.get("image")
@@ -38,6 +39,31 @@ def predict(request):
         pred_idx = torch.argmax(probs, dim=1).item()
         confidence = round(float(probs[0, pred_idx].cpu().item()) * 100, 2)
     mood = idx_to_class.get(pred_idx, "neutral")
-    recommendations = recommend_song_for_mood(mood)
-    return Response({"mood": mood, "confidence": confidence, "recommendations": recommendations, "image_url": image_url})
+    return Response({"mood": mood, "confidence": confidence, "image_url": image_url})
+
+
+
+@api_view(['POST'])
+def save_mood(request):
+    post_id = request.data.get("post_id")
+    mood = request.data.get("mood")
+    confidence = request.data.get("confidence")
+
+    user=request.user
+    if not user.is_authenticated or not post_id:
+        return Response({"error": "Missing user_id or post_id"}, status=400)
+
+    try:
+        post = Post.objects.get(id=post_id)
+    except:
+        return Response({"error": "Post not found"}, status=404)
+
+    mood_obj = MoodDetection.objects.create(
+        user=user,
+        post=post,
+        mood=mood,
+        confidence=confidence
+    )
+
+    return Response({"mood_id": mood_obj.id}, status=201)
 

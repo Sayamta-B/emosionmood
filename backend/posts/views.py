@@ -56,29 +56,30 @@ def get_posts(request):
 
 
 
-@csrf_exempt
 @api_view(['POST'])
 def create_post(request):
+    '''
+    Returns created post id and saved_tracks for debugging in console.log
+    Saves post data (user and image) and tracks data
+    '''
     data = request.data
-    user_id = data.get("user_id")
     image_url = data.get("image")
     songs = data.get("songs", [])
 
-    # Get user from frontend-provided ID
-    try:
-        user = User.objects.get(id=user_id)
-    except User.DoesNotExist:
-        return Response({"error": "User not found"}, status=404)
+    user=request.user
 
-    # Create post
+    if not user.is_authenticated:
+        return Response({"error": "User not authenticated"}, status=401)
+
     post = Post.objects.create(user=user, image_path=image_url or "")
-    saved_tracks = []
 
+    saved_tracks = []
     for s in songs:
         spotify_id = s.get("spotify_id")
         if not spotify_id:
             continue
 
+        # returns two things: track_obj and created= boolean
         track_obj, created = Track.objects.get_or_create(
             spotify_id=spotify_id,
             defaults={
@@ -101,35 +102,8 @@ def create_post(request):
             track_obj.genre = s.get("genre", track_obj.genre)
             track_obj.save()
 
-        post.tracks.add(track_obj)
+        post.tracks.add(track_obj)                  # adds the track to the ManyToMany relationship.
         saved_tracks.append(track_obj.spotify_id)
 
     post.save()
     return Response({"post_id": post.id, "saved_tracks": saved_tracks}, status=201)
-
-@csrf_exempt
-@api_view(['POST'])
-def save_mood(request):
-    user_id = request.data.get("user_id")
-    post_id = request.data.get("post_id")
-    mood = request.data.get("mood")
-    confidence = request.data.get("confidence")
-
-    if not user_id or not post_id:
-        return Response({"error": "Missing user_id or post_id"}, status=400)
-
-    try:
-        user = User.objects.get(id=user_id)
-        post = Post.objects.get(id=post_id)
-    except:
-        return Response({"error": "User or Post not found"}, status=404)
-
-    mood_obj = MoodDetection.objects.create(
-        user=user,
-        post=post,
-        mood=mood,
-        confidence=confidence
-    )
-
-    return Response({"mood_id": mood_obj.id}, status=201)
-
