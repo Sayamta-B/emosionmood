@@ -1,12 +1,27 @@
 import MusicPlayer from "./MusicPlayer";
+import { useState } from "react";
 
 export default function CreateMusic({
   mood,
   recommendedSongs, setRecommendedSongs,
   selectedSongs, setSelectedSongs,
-  handleToggleSong,
   handleNext
 }) {
+
+
+  const [overlayVisible, setOverlayVisible] = useState(true);
+
+  const handleOverlayClick = () => {
+    console.log("User clicked play overlay!");
+    // send to backend
+    // fetch("/api/track-played/", {
+    //   method: "POST",
+    //   body: JSON.stringify({ trackId: "3n3Ppam7vgaVa1iaRUc9Lp" }),
+    //   headers: { "Content-Type": "application/json" },
+    // });
+    // hide overlay so user can click iframe
+    setOverlayVisible(false);
+  };
 
   // ----------------- Song Select / Deselect -----------------
   const handleToggleSong = (song) => {
@@ -93,6 +108,35 @@ export default function CreateMusic({
       <MusicPlayer 
         currentSong={currentSong} 
       />
+      <div style={{ position: "relative", width: "100%", height: "152px", borderRadius: "12px", overflow: "hidden" }}>
+        <iframe
+          src="https://open.spotify.com/embed/track/3n3Ppam7vgaVa1iaRUc9Lp"
+          width="100%"
+          height="152"
+          style={{ position: "relative", borderRadius: "12px", zIndex: 1 }}
+          frameBorder="0"
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          allowFullScreen
+          loading="lazy"
+        ></iframe>
+
+        {overlayVisible && (
+        <div
+          id="overlay_play"
+          onClick={handleOverlayClick}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 300,
+            width: "30%",
+            height: "100%",
+            cursor: "pointer",
+            // backgroundColor: "transparent", 
+            backgroundColor: "rgba(255,0,0,0.3)", 
+            zIndex: 2,
+          }}
+        />)}
+      </div>
 
       <button
         onClick={handleNext}

@@ -1,3 +1,6 @@
+import { useState } from "react";
+import CreateInfoContext from "./CreateInfoContext";
+
 export default function CreateInfoProvider({ children }) {
     const [userId, setUserId] = useState("");
     const [postId, setPostId] = useState("");
@@ -10,7 +13,7 @@ export default function CreateInfoProvider({ children }) {
     const [manualMood, setManualMood] = useState("");
     
     return (
-        <UserPhotoInfoContext.Provider
+        <CreateInfoContext.Provider
             value={{
                 userId, setUserId,
                 postId, setPostId,
@@ -24,6 +27,6 @@ export default function CreateInfoProvider({ children }) {
             }}
         >
             {children}
-        </UserPhotoInfoContext.Provider>
+        </CreateInfoContext.Provider>
     );
 }

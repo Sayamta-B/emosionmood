@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .serializers import LoginSerializer, UserSerializer
+from .models import User
 
 
 @ensure_csrf_cookie

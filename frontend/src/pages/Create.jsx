@@ -1,6 +1,8 @@
 import CreateForm from "../components/CreateForm";
 import CreateMusic from "../components/CreateMusic";
 import { getCookie } from "../utils"
+import { useContext, useState, useEffect } from "react";
+import CreateInfoContext from "../context/CreateInfoContext";
 
 function Create(){
     const csrfToken= getCookie('csrfToken');
@@ -17,21 +19,21 @@ function Create(){
     const [detectedConfidence, setDetectedConfidence] = useState(null);
 
 
-    useEffect(() => {
-        const detectMood = async () => {
-            if (!file && !manualMood) return;
+    // useEffect(() => {
+    //     const detectMood = async () => {
+    //         if (!file && !manualMood) return;
 
-            const detected = manualMood || (await getMoodFromFile(file));
-            if (!detected) return;
+    //         const detected = manualMood || (await getMoodFromFile(file));
+    //         if (!detected) return;
 
-            setMood(detected);
+    //         setMood(detected);
 
-            const recos = await fetchRecommendations();
-            setSongs(recos);
-            setRecommendedSongs(recos.slice(0, 5));
-        };
-        detectMood();
-    }, [file, manualMood]);
+    //         const recos = await fetchRecommendations(detected);
+    //         setSongs(recos);
+    //         setRecommendedSongs(recos.slice(0, 5));
+    //     };
+    //     detectMood();
+    // }, [file, manualMood]);
 
 
     const getMoodFromFile = async (file) => {
@@ -43,7 +45,6 @@ function Create(){
         const res = await fetch("http://localhost:8000/mood/predict/", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json", 
                 "X-CSRFToken": csrfToken
             },
             body: formData
@@ -57,10 +58,10 @@ function Create(){
         return data.mood ?? null;
     };
 
-    const fetchRecommendations = async () => {
+    const fetchRecommendations = async (current_mood) => {
         try {
         const res = await fetch(
-            `http://localhost:8000/spotify/get_recommendation/?mood=${mood}`,
+            `http://localhost:8000/spotify/get_recommendation/?mood=${current_mood}`,
             { credentials: "include" }
         );
 
@@ -103,7 +104,7 @@ function Create(){
             });
             const data = await res.json();
             if (!data.post_id) 
-                return alert("hihihiFailed to create post!");
+                return alert("Failed to create post!");
             console.log(data.saved_tracks);
 
 
@@ -121,7 +122,7 @@ function Create(){
                     confidence: detectedConfidence
             })});
 
-            windows.href.location("/home");
+            windows.location.href("/home");
         } catch (err) {
             console.error(err);
             alert("Failed to create post");
@@ -130,24 +131,22 @@ function Create(){
 
 
     return(
-        <>
+        <div className="flex min-h-screen bg-gray-50 p-6 gap-6">
             <CreateForm 
                 file={file} 
                 setFile={setFile} 
                 manualMood={manualMood} 
                 setManualMood={setManualMood} 
             />
-
-            <CreateMusic
-                mood={mood}
-                recommendedSongs={recommendedSongs}
-                setRecommendedSongs={setRecommendedSongs}
-                selectedSongs={selectedSongs}
-                setSelectedSongs={setSelectedSongs}
-                handleToggleSong={handleToggleSong}
-                handleNext={handleNext}
-            />
-        </>
+                <CreateMusic
+                    mood={mood}
+                    recommendedSongs={recommendedSongs}
+                    setRecommendedSongs={setRecommendedSongs}
+                    selectedSongs={selectedSongs}
+                    setSelectedSongs={setSelectedSongs}
+                    handleNext={handleNext}
+                />
+        </div>
     );
 }
 export default Create;

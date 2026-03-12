@@ -1,6 +1,6 @@
 from django.db import models
-from users.views import User
-from posts.views import Post
+from users.models import User
+from posts.models import Post
 
 class MoodDetection(models.Model):
     MOOD_CHOICES = [

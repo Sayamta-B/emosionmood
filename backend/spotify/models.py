@@ -1,22 +1,22 @@
 from django.db import models
-from users.models import User
 from mood.models import MoodDetection
 
 
 class Track(models.Model):
     spotify_id = models.CharField(unique=True, max_length=50)
-    name = models.TextField()
+    name = models.TextField() #
     artists = models.JSONField(null=True, blank=True)  # structured array of artists
-    album = models.TextField()
+    album = models.TextField() #
     duration_ms = models.IntegerField()
-    genre = models.CharField(max_length=50, null=True, blank=True)
+    mood = models.CharField(max_length=50, null=True, blank=True)
     image_url = models.TextField(null=True, blank=True)
+    embed_url = models.URLField(null=True, blank=True)#
     created_at = models.DateTimeField(auto_now_add=True)
 
 
 class TrackFavorite(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    track = models.ForeignKey(Track, on_delete=models.CASCADE)
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    track = models.ForeignKey('Track', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -25,7 +25,7 @@ class TrackFavorite(models.Model):
         ]
 
 class ListeningHistory(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
     track = models.ForeignKey(Track, on_delete=models.CASCADE)
     listen_count = models.IntegerField(default=0)
     last_listened_at = models.DateTimeField(auto_now=True)
