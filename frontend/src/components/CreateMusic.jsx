@@ -1,7 +1,7 @@
 import MusicPlayer from "./MusicPlayer";
 import { useEffect } from "react";
 
-export default function CreateMusic({
+function CreateMusic({
   mood,
   recommendedSongs, setRecommendedSongs,
   selectedSongs, setSelectedSongs,
@@ -74,10 +74,10 @@ export default function CreateMusic({
             >
               <div className="flex items-center space-x-3">
 
-                <img
+                {/* <img
                   src={song.album_cover}
                   className="w-12 h-12 rounded-lg"
-                />
+                /> */}
 
                 <div>
                   <p className="font-semibold">{song.name}</p>
@@ -115,3 +115,5 @@ export default function CreateMusic({
     </div>
   );
 }
+
+export default CreateMusic;

@@ -3,5 +3,5 @@ from . import views
 
 urlpatterns = [
     path("get_recommendation/", views.get_recommendation),
-
+    path("played/", views.track_played),
 ]

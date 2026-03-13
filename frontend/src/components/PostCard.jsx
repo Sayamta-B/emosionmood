@@ -1,18 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MoreVertical } from "lucide-react";
+import { getCookie } from "../utils";
 
 export default function PostCard({ post }) {
   const [currentTrackUrl, setCurrentTrackUrl] = useState(null);
   const [overlayVisible, setOverlayVisible] = useState(true);
-  const handleOverlayClick = () => {
-    console.log("User clicked play overlay!");
-    // send to backend
-    // fetch("/api/track-played/", {
-    //   method: "POST",
-    //   body: JSON.stringify({ trackId: "3n3Ppam7vgaVa1iaRUc9Lp" }),
-    //   headers: { "Content-Type": "application/json" },
-    // });
-    // hide overlay so user can click iframe
+
+  useEffect(()=>{
+    setOverlayVisible(true);
+  }, [currentTrackUrl])
+
+  const handleOverlayClick = async (trackId) => {
+    console.log("User clicked play overlay!", trackId);
+
+    try {
+      const res = await fetch("http://localhost:8000/spotify/played/", {
+        method: "POST",
+        credentials: "include", // include cookies/session
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCookie("csrftoken") // if using CSRF protection
+        },
+        body: JSON.stringify({
+          spotify_id: trackId,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        console.log("Listening history updated:", data);
+      } else {
+        console.warn("Failed to update listening history:", data);
+      }
+    } catch (err) {
+      console.error("Error updating listening history:", err);
+    }
+
+    // hide overlay so user can interact with iframe
     setOverlayVisible(false);
   };  
 
@@ -57,6 +82,7 @@ export default function PostCard({ post }) {
         </div>
       )}
 
+      say heeeeeeee:`${overlayVisible}`
       {/* Spotify Player */}
       {currentTrackUrl && (
       <div style={{ position: "relative", width: "100%", height: "152px", borderRadius: "12px", overflow: "hidden" }}>        
@@ -68,11 +94,12 @@ export default function PostCard({ post }) {
             frameBorder="0"
             allow="encrypted-media"
             title="Spotify Player"
+            style={{position: "absolute", zIndex: 1}}
           ></iframe>
           {overlayVisible && (
             <div
               id="overlay_play"
-              onClick={handleOverlayClick}
+              onClick={() => handleOverlayClick(currentTrackUrl)}
               style={{
                 position: "absolute",
                 top: 0,

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getCookie } from "../utils";
 
 export default function MusicPlayer({ currentSong }) {
 
@@ -9,22 +10,39 @@ export default function MusicPlayer({ currentSong }) {
       setOverlayVisible(true);
     }, [currentSong]);
   
-    const handleOverlayClick = () => {
-      console.log("User clicked play overlay!");
-      // send to backend
-      // fetch("/api/track-played/", {
-      //   method: "POST",
-      //   body: JSON.stringify({ trackId: "3n3Ppam7vgaVa1iaRUc9Lp" }),
-      //   headers: { "Content-Type": "application/json" },
-      // });
-      // hide overlay so user can click iframe
-      setOverlayVisible(false);
-    };
+    const handleOverlayClick = async (trackId) => {
+        console.log("User clicked play overlay!", trackId);
+    
+        try {
+          const res = await fetch("http://localhost:8000/spotify/played/", {
+            method: "POST",
+            credentials: "include", // include cookies/session
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": getCookie("csrftoken") // if using CSRF protection
+            },
+            body: JSON.stringify({
+              spotify_id: trackId,
+            }),
+          });
+    
+          const data = await res.json();
+    
+          if (res.ok) {
+            console.log("Listening history updated:", data);
+          } else {
+            console.warn("Failed to update listening history:", data);
+          }
+        } catch (err) {
+          console.error("Error updating listening history:", err);
+        }
+    
+        // hide overlay so user can interact with iframe
+        setOverlayVisible(false);
+      };
+
   return (
-    <div className="bg-gray-100 rounded-xl p-4 text-center mt-6">
-
-      <p className="font-semibold mb-2">Music Player</p>
-
+    <div className="bg-gray-100 rounded-xl p-3 text-center mt-6">
       {currentSong ? (
         <>
         <div style={{ position: "relative", width: "100%", height: "82px", borderRadius: "12px", overflow: "hidden" }}>
@@ -40,7 +58,7 @@ export default function MusicPlayer({ currentSong }) {
           {overlayVisible && (
           <div
             id="overlay_play"
-            onClick={handleOverlayClick}
+            onClick={() => handleOverlayClick(currentSong.spotify_id)}
             style={{
               position: "absolute",
               top: 0,
@@ -54,10 +72,6 @@ export default function MusicPlayer({ currentSong }) {
             }}
           />)}
         </div>
-
-          <p className="mt-2 text-sm">
-            🎵 Now playing: <strong>{currentSong.name}</strong> by {currentSong.artists}
-          </p>
         </>
       ) : (
         <p className="text-gray-400 text-sm">No song selected</p>
