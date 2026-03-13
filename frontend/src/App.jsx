@@ -8,15 +8,14 @@ import LandingPage from "./pages/LandingPage";
 import SidebarLeft from "./components/SidebarLeft";
 import Home from "./pages/Home";
 import Create from "./pages/Create";
-import Form from "./pages/Form";
 
 import { useState, useEffect } from "react";
-import FormProvider from "./context/FormProvider";
 import CreateInfoProvider from "./context/CreateInfoProvider";
 
 
 export function AppRoutes(){
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     function checkAuth() {
       (async () => {
@@ -37,6 +36,8 @@ export function AppRoutes(){
 
         } catch (err) {
           console.error("Auth check failed:", err);
+        }finally {
+          setLoading(false); // finished fetching
         }
       })();
     }
@@ -44,6 +45,8 @@ export function AppRoutes(){
     checkAuth();
   }, []);
     
+  if (loading) return <div>Loading...</div>;
+  
   return(
     <>
         <Routes>
