@@ -5,6 +5,7 @@ export default function CreateForm({ file, setFile, manualMood, setManualMood })
     neutral: "😐 Neutral",
     sad: "😢 Sad",
     surprise: "😲 Surprise",
+    angry: "😡 Angry",
   };
 
   return (

@@ -19,21 +19,21 @@ function Create(){
     const [detectedConfidence, setDetectedConfidence] = useState(null);
 
 
-    // useEffect(() => {
-    //     const detectMood = async () => {
-    //         if (!file && !manualMood) return;
+    useEffect(() => {
+        const detectMood = async () => {
+            if (!file && !manualMood) return;
 
-    //         const detected = manualMood || (await getMoodFromFile(file));
-    //         if (!detected) return;
+            const detected = manualMood || (await getMoodFromFile(file));
+            if (!detected) return;
 
-    //         setMood(detected);
+            setMood(detected);
 
-    //         const recos = await fetchRecommendations(detected);
-    //         setSongs(recos);
-    //         setRecommendedSongs(recos.slice(0, 5));
-    //     };
-    //     detectMood();
-    // }, [file, manualMood]);
+            // const recos = await fetchRecommendations(detected);
+            setSongs(recos);
+            setRecommendedSongs(recos.slice(0, 5));
+        };
+        detectMood();
+    }, [file, manualMood]);
 
 
     const getMoodFromFile = async (file) => {

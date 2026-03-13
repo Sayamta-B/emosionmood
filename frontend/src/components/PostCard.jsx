@@ -3,6 +3,17 @@ import { MoreVertical } from "lucide-react";
 
 export default function PostCard({ post }) {
   const [currentTrackUrl, setCurrentTrackUrl] = useState(null);
+  const handleOverlayClick = () => {
+    console.log("User clicked play overlay!");
+    // send to backend
+    // fetch("/api/track-played/", {
+    //   method: "POST",
+    //   body: JSON.stringify({ trackId: "3n3Ppam7vgaVa1iaRUc9Lp" }),
+    //   headers: { "Content-Type": "application/json" },
+    // });
+    // hide overlay so user can click iframe
+    setOverlayVisible(false);
+  };  
 
   return (
     <div className="bg-white rounded-2xl shadow-sm p-4 w-5/5 mx-auto mb-6">
@@ -47,6 +58,7 @@ export default function PostCard({ post }) {
 
       {/* Spotify Player */}
       {currentTrackUrl && (
+      <div style={{ position: "relative", width: "100%", height: "152px", borderRadius: "12px", overflow: "hidden" }}>        
         <div className="mt-3">
           <iframe
             src={`https://open.spotify.com/embed/track/${currentTrackUrl}`}
@@ -57,9 +69,25 @@ export default function PostCard({ post }) {
             allowTransparency="true"
             title="Spotify Player"
           ></iframe>
+          {overlayVisible && (
+            <div
+              id="overlay_play"
+              onClick={handleOverlayClick}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 300,
+                width: "30%",
+                height: "100%",
+                cursor: "pointer",
+                // backgroundColor: "transparent", 
+                backgroundColor: "rgba(255,0,0,0.3)", 
+                zIndex: 2,
+              }}
+            />)}
+            </div>
         </div>
       )}
-
     </div>
   );
 }
