@@ -1,5 +1,5 @@
 import MusicPlayer from "./MusicPlayer";
-import { useState } from "react";
+import { useEffect } from "react";
 
 export default function CreateMusic({
   mood,
@@ -9,23 +9,14 @@ export default function CreateMusic({
 }) {
 
 
-  const [overlayVisible, setOverlayVisible] = useState(true);
-
-  const handleOverlayClick = () => {
-    console.log("User clicked play overlay!");
-    // send to backend
-    // fetch("/api/track-played/", {
-    //   method: "POST",
-    //   body: JSON.stringify({ trackId: "3n3Ppam7vgaVa1iaRUc9Lp" }),
-    //   headers: { "Content-Type": "application/json" },
-    // });
-    // hide overlay so user can click iframe
-    setOverlayVisible(false);
-  };
-
+  useEffect(() => {
+      setSelectedSongs([]);
+  }, [mood]);
   // ----------------- Song Select / Deselect -----------------
   const handleToggleSong = (song) => {
-    const exists = selectedSongs.some(s => s.spotify_id === song.spotify_id);
+    const exists = selectedSongs.some(
+      s => s.spotify_id === song.spotify_id
+    );
 
     const updated = exists
       ? selectedSongs.filter(s => s.spotify_id !== song.spotify_id)
@@ -35,15 +26,20 @@ export default function CreateMusic({
     reorderRecommendations(updated);
   };
 
-
   const reorderRecommendations = (updatedSelected) => {
-    const selectedIds = new Set(updatedSelected.map(s => s.spotify_id));
-
-    const sortedSelected = updatedSelected.map(
-      s => songs.find(x => x.spotify_id === s.spotify_id)
+    const selectedIds = new Set(
+      updatedSelected.map(s => s.spotify_id)
     );
 
-    const unselected = songs.filter(s => !selectedIds.has(s.spotify_id));
+    const sortedSelected = updatedSelected.map(
+      s => recommendedSongs.find(
+        x => x.spotify_id === s.spotify_id
+      )
+    );
+
+    const unselected = recommendedSongs.filter(
+      s => !selectedIds.has(s.spotify_id)
+    );
 
     setRecommendedSongs([...sortedSelected, ...unselected]);
   };
@@ -68,12 +64,12 @@ export default function CreateMusic({
         {recommendedSongs.map((song) => {
 
           const isSelected = selectedSongs.some(
-            s => s.spotify_id === song.spotify_id
+            s => s.id === song.id
           );
 
           return (
             <div
-              key={song.spotify_id}
+              key={song.id}
               className="flex justify-between items-center p-2 rounded-xl hover:bg-gray-100"
             >
               <div className="flex items-center space-x-3">
@@ -85,7 +81,7 @@ export default function CreateMusic({
 
                 <div>
                   <p className="font-semibold">{song.name}</p>
-                  <p className="text-sm text-gray-500">{song.artists}</p>
+                  <p className="text-sm text-gray-500">{song.album}</p>
                 </div>
 
               </div>
@@ -108,35 +104,6 @@ export default function CreateMusic({
       <MusicPlayer 
         currentSong={currentSong} 
       />
-      <div style={{ position: "relative", width: "100%", height: "152px", borderRadius: "12px", overflow: "hidden" }}>
-        <iframe
-          src="https://open.spotify.com/embed/track/6i71yrjuQ9f1zUSVfEChem"
-          width="100%"
-          height="152"
-          style={{ position: "relative", borderRadius: "12px", zIndex: 1 }}
-          frameBorder="0"
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          allowFullScreen
-          loading="lazy"
-        ></iframe>
-
-        {overlayVisible && (
-        <div
-          id="overlay_play"
-          onClick={handleOverlayClick}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 300,
-            width: "30%",
-            height: "100%",
-            cursor: "pointer",
-            // backgroundColor: "transparent", 
-            backgroundColor: "rgba(255,0,0,0.3)", 
-            zIndex: 2,
-          }}
-        />)}
-      </div>
 
       <button
         onClick={handleNext}

@@ -4,15 +4,19 @@ import PostCard from "../components/Postcard";
 
 function Home(){
     const [posts, setPosts] = useState([]);
-    useEffect(()=>async()=>{
-        const res= await fetch("http://localhost:8000/posts/get_posts",
-            {
-                headers:{"Content-Type":"application/json"},
-                credentials:"include",
-            }
-        )
-        setPosts(res.json('posts'));
-    })
+    useEffect(() => {
+        const fetchPosts = async () => {
+            const res = await fetch("http://localhost:8000/posts/get_posts/", {
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+            });
+
+            const data = await res.json();
+            setPosts(data);
+        };
+
+        fetchPosts();
+    }, []);
     return(
         <div className="flex h-screen relative">
             <main className="flex-1 overflow-y-auto p-5 space-y-5">
@@ -21,7 +25,6 @@ function Home(){
                 ) : (
                 <p className="text-gray-500">No posts to display</p>
                 )}
-                just wait
             </main>
             <SidebarRight />
         </div>

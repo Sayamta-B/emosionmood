@@ -3,14 +3,12 @@ from mood.models import MoodDetection
 
 
 class Track(models.Model):
-    spotify_id = models.CharField(unique=True, max_length=50, null=True)
+    spotify_id = models.CharField(max_length=50, null=True)
     name = models.TextField() #
     artists = models.JSONField(null=True, blank=True)  # structured array of artists
     album = models.TextField() #
-    duration_ms = models.IntegerField(null=True)
     mood = models.CharField(max_length=50, null=True, blank=True)
     image_url = models.TextField(null=True, blank=True)
-    embed_url = models.URLField(null=True, blank=True)#
     created_at = models.DateTimeField(auto_now_add=True)        
 
 

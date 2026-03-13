@@ -3,6 +3,7 @@ import { MoreVertical } from "lucide-react";
 
 export default function PostCard({ post }) {
   const [currentTrackUrl, setCurrentTrackUrl] = useState(null);
+  const [overlayVisible, setOverlayVisible] = useState(true);
   const handleOverlayClick = () => {
     console.log("User clicked play overlay!");
     // send to backend
@@ -66,7 +67,6 @@ export default function PostCard({ post }) {
             height="80"
             frameBorder="0"
             allow="encrypted-media"
-            allowTransparency="true"
             title="Spotify Player"
           ></iframe>
           {overlayVisible && (
@@ -76,9 +76,9 @@ export default function PostCard({ post }) {
               style={{
                 position: "absolute",
                 top: 0,
-                left: 300,
-                width: "30%",
-                height: "100%",
+                left: 520,
+                width: "10%",
+                height: "60%",
                 cursor: "pointer",
                 // backgroundColor: "transparent", 
                 backgroundColor: "rgba(255,0,0,0.3)", 

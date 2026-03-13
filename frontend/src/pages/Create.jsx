@@ -5,7 +5,7 @@ import { useContext, useState, useEffect } from "react";
 import CreateInfoContext from "../context/CreateInfoContext";
 
 function Create(){
-    const csrfToken= getCookie('csrfToken');
+    const csrfToken= getCookie('csrftoken');
     const {
         mood, setMood,
         file, setFile,
@@ -28,8 +28,8 @@ function Create(){
 
             setMood(detected);
 
-            // const recos = await fetchRecommendations(detected);
-            setSongs(recos);
+            const recos = await fetchRecommendations(detected);
+            setSongs(recos); // for refresh function in future
             setRecommendedSongs(recos.slice(0, 5));
         };
         detectMood();
@@ -51,6 +51,7 @@ function Create(){
         });
 
         const data = await res.json();
+        console.log("predict response:", data);
 
         setImageUrl(data.image_url ?? null);
         setDetectedMood(data.mood ?? null);
@@ -95,14 +96,13 @@ function Create(){
                         spotify_id: s.spotify_id,
                         name: s.name,
                         artists: s.artists,
-                        album: s.album?.name ?? "",
-                        image_url: s.album_cover,
-                        duration_ms: s.duration_ms,
-                        genre: s.genre
+                        album: s.album ?? "",
+                        mood : s.mood,
                     }))
                 })
             });
             const data = await res.json();
+            alert("hello");
             if (!data.post_id) 
                 return alert("Failed to create post!");
             console.log(data.saved_tracks);
@@ -122,7 +122,7 @@ function Create(){
                     confidence: detectedConfidence
             })});
 
-            windows.location.href("/home");
+            window.location.href="/home";
         } catch (err) {
             console.error(err);
             alert("Failed to create post");
