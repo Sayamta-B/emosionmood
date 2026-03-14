@@ -6,4 +6,6 @@ urlpatterns = [
     path("played/", views.track_played),
     path("is_favorite/<str:spotify_id>/", views.is_favorite),
     path("toggle_favorite/", views.toggle_favorite),
+    path("favorites/", views.get_favorites, name="get_favorites"),
+    path("history/", views.get_history, name="get_history"),
 ]

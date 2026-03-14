@@ -1,11 +1,52 @@
 import React, { useState, useEffect } from "react";
-import { MoreVertical, Heart } from "lucide-react";
+import { MoreVertical, Heart, Bookmark, Trash2 } from "lucide-react";
 import { getCookie, checkFavorite, toggleFavorite } from "../utils";
 
-export default function PostCard({ post }) {
+
+export default function PostCard({ post, onDelete, onBookmarkToggle}) {
   const [currentTrackUrl, setCurrentTrackUrl] = useState(null);
   const [overlayVisible, setOverlayVisible] = useState(true);
   const [isFavorite, setIsFavorite] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this post?")) return;
+
+    try {
+      const res = await fetch(`http://localhost:8000/posts/${post.id}/delete/`, {
+        method: "DELETE",
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+        credentials: "include",
+      });
+
+      if (res.ok) {
+        onDelete?.(post.id);
+        console.log("Post deleted");
+      } else {
+        console.warn("Failed to delete post");
+      }
+    } catch (err) {
+      console.error("Error deleting post:", err);
+    }
+  };
+
+  const handleBookmark = async () => {
+    try {
+      const res = await fetch(`http://localhost:8000/posts/${post.id}/bookmark/`, {
+        method: "POST",
+        headers: { "X-CSRFToken": getCookie("csrftoken") },
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        onBookmarkToggle?.(post.id, data.bookmark); // update parent state
+      }
+    } catch (err) {
+      console.error("Error toggling bookmark:", err);
+    }
+  };
 
   useEffect(() => {
     setOverlayVisible(true);
@@ -69,9 +110,30 @@ export default function PostCard({ post }) {
       {/* User Info */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-3">
+          <img
+            src={post.user.profile_url 
+              ? `http://localhost:8000/media/uploads/${post.user.profile_url}` 
+              : 'http://localhost:8000/media/uploads/defaultProfile.jpg'}
+              alt="Profile"
+            className="w-12 h-12 rounded-full object-cover border"
+          />
           <span className="font-semibold">{post.user?.username}</span>
         </div>
-        <MoreVertical size={18} className="text-gray-600" />
+
+        <div className="relative">
+          <div className="flex space-x-3">
+            <button onClick={handleDelete} className="text-red-500 hover:text-red-700">
+              <Trash2 size={18} />
+            </button>
+            <button onClick={handleBookmark} className="hover:text-yellow-500">
+              <Bookmark
+                size={18}
+                color={post.bookmark ? "yellow" : "gray"}
+                fill={post.bookmark ? "yellow" : "none"}
+              />
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Post Image */}

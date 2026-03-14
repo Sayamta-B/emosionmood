@@ -73,10 +73,15 @@ def me_view(request):
     if not user.is_authenticated:
         return JsonResponse({"error": "Not authenticated"}, status=401)
     
+    
     return JsonResponse({
         "id": user.id,
         "username": user.username,
         "email": user.email,
+        "date_joined": user.date_joined,
+        "profile_url": user.profile_url,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
     })
 
 @api_view(["POST"])
@@ -89,3 +94,20 @@ def logout_view(request):
         logout(request)
         return Response({"detail": "Successfully logged out"}, status=200)
     return Response({"detail": "Already logged out"}, status=200)
+
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import UserSerializer
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def update_user(request):
+    user = request.user
+    serializer = UserSerializer(user, data=request.data, partial=True, context={'request': request})
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=200)
+    return Response(serializer.errors, status=400)

@@ -118,9 +118,9 @@ function Create(){
                 },
                 body: JSON.stringify({
                     post_id: data.post_id,
-                    mood: detectedMood,
-                    confidence: detectedConfidence
-            })});
+                    mood: manualMood || detectedMood,
+                    confidence: manualMood ? 1.0 : detectedConfidence
+                })});
 
             window.location.href="/home";
         } catch (err) {

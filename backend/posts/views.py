@@ -75,7 +75,38 @@ def get_posts(request):
                 "profile_url": post.user.profile_url,
             },
             "image_path": post.image_path,
+            "bookmark": post.bookmark,
             "tracks": tracks_list
         })
+        print("lalalalalalalal"+post.user.profile_url);
 
     return Response(data)
+
+
+@api_view(["DELETE"])
+def delete_post(request, post_id):
+    user = request.user
+    try:
+        post = Post.objects.get(id=post_id)
+    except Post.DoesNotExist:
+        return Response({"error": "Post not found"}, status=404)
+
+    if post.user != user:
+        return Response({"error": "Not allowed"}, status=403)
+
+    post.delete()
+    return Response({"success": True})
+
+
+@api_view(["POST"])
+def toggle_bookmark(request, post_id):
+    try:
+        post = Post.objects.get(id=post_id)
+    except Post.DoesNotExist:
+        return Response({"error": "Post not found"}, status=404)
+
+    # Toggle bookmark boolean
+    post.bookmark = not post.bookmark
+    post.save()
+
+    return Response({"bookmark": post.bookmark})

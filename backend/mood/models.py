@@ -8,6 +8,7 @@ class MoodDetection(models.Model):
         ('neutral', 'Neutral'),
         ('sad', 'Sad'),
         ('surprise', 'Surprise'),
+        ('angry', 'Angry'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)

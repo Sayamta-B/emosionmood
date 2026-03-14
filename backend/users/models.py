@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
-    profile_url = models.TextField(default='C:/emosionmood/project_images/defaultProfile.jpg')
+    profile_url = models.TextField(blank=True, null=True, default='uploads/defaultProfile.jpg')
 
     USERNAME_FIELD='email'
     REQUIRED_FIELDS=['username']

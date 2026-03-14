@@ -95,3 +95,21 @@ def is_favorite(request, spotify_id):
 
     exists = TrackFavorite.objects.filter(user=user, track=track).exists()
     return Response({"is_favorite": exists})
+
+
+@api_view(["GET"])
+def get_favorites(request):
+    user = request.user
+    favorites = TrackFavorite.objects.filter(user=user).select_related("track")
+    favorite_tracks = [{"name": f.track.name, "spotify_id": f.track.spotify_id} for f in favorites]
+    return Response(favorite_tracks)
+
+@api_view(["GET"])
+def get_history(request):
+    user = request.user
+    history = ListeningHistory.objects.filter(user=user).select_related("track").order_by("-last_listened_at")
+    tracks_history = [
+        {"name": h.track.name, "spotify_id": h.track.spotify_id, "count": h.listen_count} 
+        for h in history
+    ]
+    return Response(tracks_history)

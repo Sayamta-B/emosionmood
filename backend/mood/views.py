@@ -67,3 +67,19 @@ def save_mood(request):
 
     return Response({"mood_id": mood_obj.id}, status=201)
 
+
+
+@api_view(["GET"])
+def get_user_moods(request):
+    user = request.user
+    moods = MoodDetection.objects.filter(user=user).order_by('-created_at')
+    
+    # Return simple JSON stats without serializers
+    mood_counts = {}
+    for choice, _ in MoodDetection.MOOD_CHOICES:
+        mood_counts[choice] = moods.filter(mood=choice).count()
+    
+    return Response({
+        "total_moods": moods.count(),
+        "mood_counts": mood_counts,
+    })
