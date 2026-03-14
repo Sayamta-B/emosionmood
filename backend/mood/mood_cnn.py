@@ -41,7 +41,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = MoodCNN(num_classes=5).to(device)
 
 checkpoint = torch.load(
-    r"C:/moodcnnProgram/emosion_backend/api/mood_cnn.pth",
+    r"C:/emosionmood/backend/mood/mood_cnn.pth",
     map_location=torch.device("cpu")
 )
 model.load_state_dict(checkpoint["model_state_dict"])

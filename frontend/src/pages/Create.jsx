@@ -102,7 +102,6 @@ function Create(){
                 })
             });
             const data = await res.json();
-            alert("hello");
             if (!data.post_id) 
                 return alert("Failed to create post!");
             console.log(data.saved_tracks);

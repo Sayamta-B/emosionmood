@@ -78,7 +78,6 @@ def get_posts(request):
             "bookmark": post.bookmark,
             "tracks": tracks_list
         })
-        print("lalalalalalalal"+post.user.profile_url);
 
     return Response(data)
 

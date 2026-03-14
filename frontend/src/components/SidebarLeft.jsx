@@ -29,7 +29,7 @@ function SidebarLeft(){
     return(
         <aside className="w-1/5 flex flex-col justify-between p-2 bg-white shadow-[3px_0_6px_rgba(0,0,0,0.1)] h-screen">
             <div>
-                <h1 className="font-bold mb-8 px-4 p-4">Emosion</h1>
+                <h1 className="font-bold mb-8 px-4 p-4 text-3xl">Emosion</h1>
                 <nav className="space-y-2">
                     {tabs.map((tab)=>(
                         <NavLink
