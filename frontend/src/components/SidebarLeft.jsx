@@ -1,4 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
+import { getCookie } from "../utils";
 
 function SidebarLeft(){
     const tabs = [
