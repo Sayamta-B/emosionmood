@@ -109,7 +109,7 @@ export default function PostCard({ post, onDelete, onBookmarkToggle}) {
 
       {/* User Info */}
       <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-3" onClick={async()=>window.location.href="/profile"}>
           <img
             src={post.user.profile_url 
               ? `http://localhost:8000/media/uploads/${post.user.profile_url}` 

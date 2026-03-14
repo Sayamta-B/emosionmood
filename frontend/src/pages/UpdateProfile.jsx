@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCookie } from "../utils";
 
-export default function UpdateProfile() {
+export default function UpdateProfile(user) {
   const navigate = useNavigate();
   const csrfToken = getCookie("csrftoken");
 
@@ -29,13 +29,13 @@ export default function UpdateProfile() {
             email: data.email || "",
             first_name: data.first_name || "",
             last_name: data.last_name || "",
-            profile_url: data.profile_url || "uploads/defaultProfile.jpg",
+            profile_url: user.profile_url || "uploads/defaultProfile.jpg",
           });
-          setPreviewUrl(
-            data.profile_url
-              ? `http://localhost:8000/media/${data.profile_url}`
-              : "http://localhost:8000/media/uploads/defaultProfile.jpg"
-          );
+          // setPreviewUrl(
+          //   user.profile_url
+          //     ? `http://localhost:8000/media/uploads/${user.profile_url}`
+          //     : "http://localhost:8000/media/uploads/defaultProfile.jpg"
+          // );
         }
       } catch (err) {
         console.error(err);
@@ -92,17 +92,23 @@ export default function UpdateProfile() {
     <div className="p-6 max-w-lg mx-auto bg-white shadow rounded">
       <h2 className="text-2xl font-bold mb-4">Update Profile</h2>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        <img src={previewUrl} alt="Profile Preview" className="w-24 h-24 rounded-full mb-2" />
+        {/* <img
+           src={user.profile_url 
+            ? `http://localhost:8000/media/uploads/${user.profile_url}` 
+            : 'http://localhost:8000/media/uploads/defaultProfile.jpg'}
+            alt="Profile"
+          className="w-24 h-24 rounded-full object-cover border"
+        /> */}
 
         <input type="file" accept="image/*" onChange={handleFileChange} />
 
-        <input
+        {/* <input
           name="profile_url"
           value={formData.profile_url}
           onChange={handleChange}
           placeholder="Profile URL"
           className="border p-2 rounded"
-        />
+        /> */}
 
         <input
           name="username"
