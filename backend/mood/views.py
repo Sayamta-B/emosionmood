@@ -18,6 +18,7 @@ def predict(request):
     image = request.FILES.get("image")
     if not image:
         return Response({"error": "No image provided"}, status=400)
+
     try:
         timestamp = timezone.now().strftime("%Y%m%d_%H%M%S")
         safe_name = f"{timestamp}_{image.name}"
@@ -27,19 +28,51 @@ def predict(request):
     except Exception:
         return Response({"error": "Image save failed"}, status=500)
 
+    # --- Load image for processing ---
     try:
         img = Image.open(image).convert("L")
     except Exception:
         img = Image.open(default_storage.open(saved_name)).convert("L")
 
+    # --- Haar Cascade Face Detection ---
+    import cv2
+    import numpy as np
+
+    face_cascade = cv2.CascadeClassifier(
+        cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+    )
+
+    img_np = np.array(img)
+
+    faces = face_cascade.detectMultiScale(
+        img_np,
+        scaleFactor=1.3,
+        minNeighbors=5,
+        minSize=(30, 30)
+    )
+
+    if len(faces) > 0:
+        # Select largest face
+        x, y, w, h = max(faces, key=lambda f: f[2] * f[3])
+        img_np = img_np[y:y+h, x:x+w]
+        img = Image.fromarray(img_np)
+
+    # --- Model inference ---
     img_tensor = inference_transform(img).unsqueeze(0).to(device)
+
     with torch.no_grad():
-        output = model(img_tensor)
+        output = model(img_tensor)            # model called here
         probs = torch.softmax(output, dim=1)
         pred_idx = torch.argmax(probs, dim=1).item()
         confidence = round(float(probs[0, pred_idx].cpu().item()) * 100, 2)
+
     mood = idx_to_class.get(pred_idx, "neutral")
-    return Response({"mood": mood, "confidence": confidence, "image_url": image_url})
+
+    return Response({
+        "mood": mood,
+        "confidence": confidence,
+        "image_url": image_url
+    })
 
 
 
