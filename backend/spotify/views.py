@@ -101,7 +101,7 @@ def is_favorite(request, spotify_id):
 def get_favorites(request):
     user = request.user
     favorites = TrackFavorite.objects.filter(user=user).select_related("track")
-    favorite_tracks = [{"name": f.track.name, "spotify_id": f.track.spotify_id} for f in favorites]
+    favorite_tracks = [{"name": f.track.name, "artists":f.track.artists, "spotify_id": f.track.spotify_id} for f in favorites]
     return Response(favorite_tracks)
 
 @api_view(["GET"])

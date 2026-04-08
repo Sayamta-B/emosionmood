@@ -153,21 +153,21 @@ export default function Profile() {
       {/* Stats Dashboard */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Posts Summary */}
-        <div className="bg-white shadow rounded p-4 flex flex-col items-center justify-center">
+        <div onClick={() => navigate("/")} className="bg-white shadow rounded p-4 flex flex-col items-center justify-center">
           <h3 className="font-semibold mb-2">Posts</h3>
           <p className="text-xl font-bold">{stats.totalPosts}</p>
           <p className="text-gray-500">Bookmarked: {stats.bookmarkedPosts}</p>
         </div>
 
         {/* Favorite Tracks Summary */}
-        <div className="bg-white shadow rounded p-4 flex flex-col items-center justify-center">
+        <div onClick={() => navigate("/favorites")} className="bg-white shadow rounded p-4 flex flex-col items-center justify-center">
           <h3 className="font-semibold mb-2">Favorite Tracks</h3>
           <p className="text-xl font-bold">{Object.keys(stats.favoriteTracks).length}</p>
         </div>
 
         {/* Mood Distribution */}
         <div className="bg-white shadow rounded p-4">
-          <h3 className="font-semibold mb-2">Mood Distribution (For photo Upload)</h3>
+          <h3 className="font-semibold mb-2">Mood Distribution</h3>
           <Pie data={moodChartData} />
         </div>
 

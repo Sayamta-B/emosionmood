@@ -9,6 +9,14 @@ export default function PostCard({ post, onDelete, onBookmarkToggle}) {
   const [isFavorite, setIsFavorite] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const moodColors = {
+    angry: "rgba(255, 99, 132, 0.25)",     // soft red
+    sad: "rgba(100, 149, 237, 0.25)",      // pastel blue
+    neutral: "rgba(200, 200, 200, 0.25)",  // light gray
+    happy: "rgba(255, 223, 128, 0.25)",    // soft yellow
+    surprise: "rgba(186, 104, 200, 0.25)", // pastel purple
+  };
+
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
 
@@ -105,7 +113,12 @@ export default function PostCard({ post, onDelete, onBookmarkToggle}) {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-4 w-5/5 mx-auto mb-6">
+    <div
+      className="rounded-2xl shadow-sm p-4 w-5/5 mx-auto mb-6"
+      style={{
+        backgroundColor: moodColors[post.tracks[0]?.mood?.toLowerCase()] || "white",
+      }}
+    >
 
       {/* User Info */}
       <div className="flex items-center justify-between mb-3">
@@ -122,6 +135,9 @@ export default function PostCard({ post, onDelete, onBookmarkToggle}) {
 
         <div className="relative">
           <div className="flex space-x-3">
+            <p className="text-xs text-gray-600 capitalize mb-2">
+              {post.tracks[0]?.mood}
+            </p>
             <button onClick={handleDelete} className="text-red-500 hover:text-red-700">
               <Trash2 size={18} />
             </button>
@@ -149,17 +165,34 @@ export default function PostCard({ post, onDelete, onBookmarkToggle}) {
       {post.tracks?.length > 0 && (
         <div className="mt-3">
           <p className="font-semibold mb-2 text-sm text-gray-700">Songs:</p>
-          <div className="flex flex-col space-y-1">
+          
+          <div className="flex flex-col space-y-2">
             {post.tracks.map((track) => {
               const artistsArray = Array.isArray(track.artists) ? track.artists : [];
+
               return (
-                <button
+                <div
                   key={track.id}
                   onClick={() => setCurrentTrackUrl(track.spotify_id)}
-                  className="text-grey-600 text-sm text-left hover:underline"
+                  className="p-2 rounded-lg hover:bg-gray-100 cursor-pointer transition"
                 >
-                  {track.name}
-                </button>
+                  <div className="flex pb-10">
+                    <span className="pr-10 center">
+                      <img width="25" height="25" src="https://img.icons8.com/ios-filled/50/play--v1.png" alt="play--v1"/>
+                    </span>
+                    <div className="flex flex-col">
+                      {/* Song name */}
+                      <span className="text-sm font-medium text-gray-800">
+                        {track.name}
+                      </span>
+
+                      {/* Artists */}
+                      <span className="text-xs text-gray-500">
+                        {artistsArray.join(", ") || "Unknown artist"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               );
             })}
           </div>
@@ -168,7 +201,7 @@ export default function PostCard({ post, onDelete, onBookmarkToggle}) {
 
       {/* Spotify Player */}
       {currentTrackUrl && (
-        <div style={{ position: "relative", width: "100%", height: "152px", borderRadius: "12px", overflow: "hidden" }}>
+        <div style={{ position: "relative", width: "100%", height: "80px", borderRadius: "12px", overflow: "hidden" }}>
           <div>
             <iframe
               src={`https://open.spotify.com/embed/track/${currentTrackUrl}`}
@@ -177,7 +210,7 @@ export default function PostCard({ post, onDelete, onBookmarkToggle}) {
               frameBorder="0"
               allow="encrypted-media"
               title="Spotify Player"
-              style={{ position: "absolute", zIndex: 1 }}
+              style={{ position: "absolute", zIndex: 1, display: "block" }}
             ></iframe>
             
             {overlayVisible && (

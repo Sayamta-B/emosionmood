@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 import Create from "./pages/Create";
 import Profile from "./pages/Profile";
 import UpdateProfile from "./pages/UpdateProfile";
+import Favorites from "./pages/Favorites";
 
 import { useState, useEffect } from "react";
 import CreateInfoProvider from "./context/CreateInfoProvider";
@@ -70,6 +71,7 @@ export function AppRoutes(){
             <Route path="/create" element={user ? <Create/> : <Navigate to="/login"/>} />
             <Route path="/profile" element={user ? <Profile/> : <Navigate to="/login"/>} />
             <Route path="/profile/update" element={<UpdateProfile />} />
+            <Route path="/favorites" element={user ? <Favorites/> : <Navigate to="/login"/>} />
           </Route>
         </Routes>
     </>

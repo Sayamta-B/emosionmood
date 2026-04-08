@@ -14,7 +14,6 @@ def create_post(request):
     Returns created post id and saved_tracks for debugging in console.log
     Saves post data (user and image) and tracks data
     '''
-    print("yes i m here your saviour")
     data = request.data
     image_url = data.get("image")
     songs = data.get("songs", [])
