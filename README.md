@@ -49,16 +49,8 @@
 ---
 
 ## 🧠 How It Works
+<img width="195" height="471" alt="image" src="https://github.com/user-attachments/assets/98203e03-f88f-49f0-99f9-4ca81bb11447" />
 
-```mermaid
-graph TD
-A[User Uploads Image] --> B[Face Detection (Haar Cascade)]
-B --> C[Preprocessing (48x48 Grayscale)]
-C --> D[CNN Model]
-D --> E[Mood Prediction]
-E --> F[Music Recommendation]
-F --> G[Post Creation]
-```
 
 ---
 
