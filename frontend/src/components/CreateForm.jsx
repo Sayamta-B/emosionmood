@@ -15,7 +15,7 @@ export default function CreateForm({ file, setFile, manualMood, setManualMood })
         Upload a Photo to Detect Mood
       </h3>
 
-      <div className="w-64 h-64 border-2 border-dashed rounded-xl flex items-center justify-center bg-gray-100 overflow-hidden">
+      <div className="w-128 h-85 border-2 border-dashed rounded-xl flex items-center justify-center bg-gray-100 overflow-hidden">
         {file ? (
           <img
             src={URL.createObjectURL(file)}
