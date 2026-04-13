@@ -2,7 +2,12 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
-    profile_url = models.TextField(blank=True, null=True, default='uploads/defaultProfile.jpg')
+    profile_url = models.ImageField(
+        upload_to="uploads/",
+        blank=True,
+        null=True,
+        default="uploads/defaultProfile.jpg"
+    )
 
     USERNAME_FIELD='email'
     REQUIRED_FIELDS=['username']

@@ -107,7 +107,7 @@ export default function Profile() {
       {
         label: "Mood Count",
         data: Object.values(stats.moods),
-        backgroundColor: ["#facc15", "#6b7280", "#4f83c7", "#22c55e", "#ef4444"],
+        backgroundColor: ["#facc15", "#6b7280", "#4f83c7", "#c522c5", "#ef4444"],
       },
     ],
   };
@@ -128,11 +128,15 @@ export default function Profile() {
       {/* Profile Info */}
       <div className="flex items-center space-x-4">
         <img
-           src={user.profile_url 
-            ? `http://localhost:8000/media/uploads/${user.profile_url}` 
-            : 'http://localhost:8000/media/uploads/defaultProfile.jpg'}
-            alt="Profile"
-          className="w-24 h-24 rounded-full object-cover border"
+          src={
+            user?.profile_url
+              ? user.profile_url.startsWith("http")
+                ? user.profile_url
+                : `http://localhost:8000${user.profile_url}`
+              : "http://localhost:8000/media/uploads/defaultProfile.jpg"
+          }
+          alt="Profile"
+          className="w-24 h-24 rounded-full"
         />
         <div>
           <h2 className="text-2xl font-bold">{user.username}</h2>

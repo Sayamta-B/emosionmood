@@ -119,16 +119,22 @@ export default function PostCard({ post, onDelete, onBookmarkToggle}) {
         backgroundColor: moodColors[post.tracks[0]?.mood?.toLowerCase()] || "white",
       }}
     >
-
+      <p className="text-xs text-gray-600 capitalize ml-130">
+              {new Date(post.created_at).toLocaleDateString()}
+      </p>
       {/* User Info */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-3" onClick={async()=>window.location.href="/profile"}>
-          <img
-            src={post.user.profile_url 
-              ? `http://localhost:8000/media/uploads/${post.user.profile_url}` 
-              : 'http://localhost:8000/media/uploads/defaultProfile.jpg'}
-              alt="Profile"
-            className="w-12 h-12 rounded-full object-cover border"
+            <img
+            src={
+              post.user.profile_url
+                ? post.user.profile_url.startsWith("http")
+                  ? post.user.profile_url
+                  : `http://localhost:8000${post.user.profile_url}`
+                : "http://localhost:8000/media/uploads/defaultProfile.jpg"
+            }
+            alt="Profile"
+            className="w-12 h-12 rounded-full"
           />
           <span className="font-semibold">{post.user?.username}</span>
         </div>

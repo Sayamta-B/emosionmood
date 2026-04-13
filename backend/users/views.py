@@ -11,103 +11,119 @@ from .serializers import LoginSerializer, UserSerializer
 from .models import User
 
 
+# ---------------------------
+# CSRF
+# ---------------------------
 @ensure_csrf_cookie
 def get_csrf(request):
-    '''
-    Returns detail that csrf cookie has been set.
-    CSRF: Cross Site Request Forgery
-    It can be prevented if server provides csrf token to ensure that request is from the trusted site
-    '''
-    csrf_token = request.META.get("CSRF_COOKIE") 
-    print(csrf_token)
     return JsonResponse({"detail": "CSRF cookie set"})
 
 
+# ---------------------------
+# REGISTER
+# ---------------------------
 @api_view(['POST'])
-@permission_classes([AllowAny])  # allow anyone to register
+@permission_classes([AllowAny])
 def register_view(request):
-    """
-    Function-based view for user registration.
-    """
     serializer = UserSerializer(data=request.data)
+
     if serializer.is_valid():
         user = serializer.save()
-        return Response(
-            {
-                "message": "Registered successfully",
-                "user": UserSerializer(user).data
-            },
-            status=status.HTTP_201_CREATED
-        )
+
+        return Response({
+            "message": "Registered successfully",
+            "user": UserSerializer(user).data
+        }, status=status.HTTP_201_CREATED)
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# ---------------------------
+# LOGIN
+# ---------------------------
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login_view(request):
-    '''
-    Returns user and status of the login.
-    Uses serialization to validate the data and authenticate to check if the user is authorized
-    '''
     serializer = LoginSerializer(data=request.data)
+
     if serializer.is_valid():
         email = serializer.validated_data['email']
         password = serializer.validated_data['password']
+
         user = authenticate(request, username=email, password=password)
+
         if user:
             login(request, user)
             return Response({
                 "message": "Logged in successfully",
                 "user": UserSerializer(user).data
             })
-        return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        return Response(
+            {"error": "Invalid credentials"},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+# ---------------------------
+# CURRENT USER (FIXED)
+# ---------------------------
 def me_view(request):
-    """
-    Returns the currently logged-in user based on session.
-    Frontend can call this to check authentication status.
-    """
     user = request.user
-    
+
     if not user.is_authenticated:
         return JsonResponse({"error": "Not authenticated"}, status=401)
-    
-    
+
     return JsonResponse({
         "id": user.id,
         "username": user.username,
         "email": user.email,
         "date_joined": user.date_joined,
-        "profile_url": user.profile_url,
         "first_name": user.first_name,
         "last_name": user.last_name,
+
+        # ✅ FIX: ImageField must be converted to URL string
+        "profile_url": (
+            user.profile_url.url
+            if user.profile_url
+            else "/media/uploads/defaultProfile.jpg"
+        )
     })
 
+
+# ---------------------------
+# LOGOUT
+# ---------------------------
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def logout_view(request):
-    '''
-    Returns detail of sucessful logout, end session
-    '''
-    if request.user.is_authenticated:
-        logout(request)
-        return Response({"detail": "Successfully logged out"}, status=200)
-    return Response({"detail": "Already logged out"}, status=200)
+    logout(request)
+    return Response({"detail": "Successfully logged out"}, status=200)
 
 
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import status
-from .serializers import UserSerializer
-
+# ---------------------------
+# UPDATE USER
+# ---------------------------
 @api_view(['PATCH'])
 @permission_classes([IsAuthenticated])
 def update_user(request):
     user = request.user
-    serializer = UserSerializer(user, data=request.data, partial=True, context={'request': request})
+
+    serializer = UserSerializer(
+        user,
+        data=request.data,
+        partial=True,
+        context={'request': request}
+    )
+
     if serializer.is_valid():
         serializer.save()
-        return Response(serializer.data, status=200)
+
+        return Response({
+            "message": "Profile updated successfully",
+            "user": serializer.data
+        }, status=200)
+
     return Response(serializer.errors, status=400)

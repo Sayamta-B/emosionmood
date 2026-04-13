@@ -71,10 +71,15 @@ def get_posts(request):
             "user": {
                 "id": post.user.id,
                 "username": post.user.username,
-                "profile_url": post.user.profile_url,
+                "profile_url": (
+                    post.user.profile_url.url
+                    if post.user.profile_url and hasattr(post.user.profile_url, "url")
+                    else "/media/uploads/defaultProfile.jpg"
+                ),
             },
             "image_path": post.image_path,
             "bookmark": post.bookmark,
+            "created_at":post.created_at,
             "tracks": tracks_list
         })
 
