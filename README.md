@@ -97,7 +97,7 @@
 
 ```bash
 git clone https://github.com/Sayamta-B/emosionmood.git
-cd emosion
+cd emosionmood
 ```
 
 #### 2. Backend setup
