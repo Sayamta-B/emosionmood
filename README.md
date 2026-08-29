@@ -96,7 +96,7 @@
 #### 1. Clone the repo
 
 ```bash
-git clone https://github.com/your-username/emosion.git
+git clone https://github.com/Sayamta-B/emosionmood.git
 cd emosion
 ```
 
